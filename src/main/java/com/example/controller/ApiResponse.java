@@ -1,5 +1,7 @@
 package com.example.controller;
 
+import java.util.Objects;
+
 /**
  * A generic response wrapper for API endpoints.
  * <p>
@@ -118,5 +120,53 @@ public class ApiResponse<T> {
      */
     public void setSuccess(boolean success) {
         this.success = success;
+    }
+
+    /**
+     * Compares this ApiResponse object with another object for equality.
+     * 
+     * @param object the object to compare with
+     * @return true if the objects are equal, false otherwise
+     */
+    @Override
+    public boolean equals(Object object) {
+        if (object == null) {
+            return false;
+        }
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof ApiResponse)) {
+            return false;
+        }
+        ApiResponse<?> apiResponse = (ApiResponse<?>) object;
+        return Objects.equals(this.data, apiResponse.getData()) &&
+            Objects.equals(this.message, apiResponse.getMessage()) &&
+            this.success == apiResponse.isSuccess();
+    }
+
+    /**
+     * Generates the hash code for this ApiResponse object.
+     * 
+     * @return the hash code of the ApiResponse
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(data, message, success);
+    }
+
+    /**
+     * Returns a string representation of the ApiResponse object.
+     * This includes the object's data, message, and success
+     * in a structured format.
+     *
+     * @return a string representation of the ApiError object.
+     */
+    @Override
+    public String toString() {
+        return "ApiResponse{data = " + data.toString() +
+            ", message = '" + message +
+            "', success = " + success +
+            "}";
     }
 }

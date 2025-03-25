@@ -1,6 +1,7 @@
 package com.example.exception.handlers;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Represents an API error response that can be returned to clients.
@@ -97,5 +98,53 @@ public class ApiError {
      */
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    /**
+     * Compares this ApiError object with another object for equality.
+     * 
+     * @param object the object to compare with
+     * @return true if the objects are equal, false otherwise
+     */
+    @Override
+    public boolean equals(Object object) {
+        if (object == null) {
+            return false;
+        }
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof ApiError)) {
+            return false;
+        }
+        ApiError apiError = (ApiError) object;
+        return status == apiError.getStatus() &&
+           Objects.equals(this.message, apiError.getMessage()) &&
+           Objects.equals(this.timestamp, apiError.getTimestamp());
+}
+
+    /**
+     * Generates the hash code for this ApiError object.
+     * 
+     * @return the hash code of the ApiError
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(status, message, timestamp);
+    }
+
+     /**
+     * Returns a string representation of the ApiError object.
+     * This includes the object's status, message, and timestamp
+     * in a structured format.
+     *
+     * @return a string representation of the ApiError object.
+     */
+    @Override
+    public String toString() {
+        return "ApiError{status = " + status +
+            ", message = '" + message +
+            "', timestamp = " + timestamp +
+            "}";
     }
 }
