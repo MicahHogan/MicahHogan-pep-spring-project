@@ -39,6 +39,12 @@ public class MessageService {
     private static final int MAX_MESSAGE_LENGTH = 255;
 
     /**
+     * Value representing number of rows in database affected to be returned in successful
+     * message update.
+     */
+    private static final int ROWS_AFFECTED = 1;
+
+    /**
      * Repository for message data access.
      */
     @Autowired
@@ -133,10 +139,10 @@ public class MessageService {
      * Deletes a message by its ID.
      * 
      * @param messageId The ID of the message to delete
-     * @return 1 if deletion was successful, 0 if the message wasn't found
+     * @return 1, the number of rows in the database affected if deletion was successful
+     * @throws BadRequestException if the message ID provided does not belong to a valid message
      * @throws InvalidInputException if the messageId is null
      */
-    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)
     public int deleteById(Integer messageId) {
         LOGGER.info("Received request to delete message with ID: {} - MessageService.deleteById(Integer messageId) method.", messageId);
 
@@ -145,14 +151,15 @@ public class MessageService {
             throw new InvalidInputException("Message ID cannot be null. Message deletion failed.");
         }
 
-        if (messageRepository.existsById(messageId)) {
-            messageRepository.deleteById(messageId);
-            LOGGER.info("Successfully deleted message with ID: {} - MessageService.deleteById(Integer messageId) method.", messageId);
-            return 1;
+        if (!messageRepository.existsById(messageId)) {
+            LOGGER.info("No message found with ID: {} - MessageService.deleteById(Integer messageId) method.", messageId);
+            throw new BadRequestException("Message with ID " + messageId + " not found. Message deletion failed.");
+            
         }
-        
-        LOGGER.info("No message found with ID: {} - MessageService.deleteById(Integer messageId) method.", messageId);
-        return 0;
+        messageRepository.deleteById(messageId);
+        LOGGER.info("Successfully deleted message with ID: {} - MessageService.deleteById(Integer messageId) method.", messageId);
+        return ROWS_AFFECTED;
+         
     }
 
     /**
@@ -162,9 +169,8 @@ public class MessageService {
      * @param updatedMessageText The new text for the message
      * @return 1 if update was successful
      * @throws InvalidInputException if the messageId is null, text is blank or too long
-     * @throws ResourceNotFoundException if the message doesn't exist
+     * @throws BadRequestException if the message doesn't exist
      */
-    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)
     public int updateMessage(Integer messageId, String updatedMessageText) {
         LOGGER.info("Received request to update message with ID: {} - MessageService.updateMessage(Integer messageId, String updatedMessageText) method.", messageId);
 
@@ -187,14 +193,15 @@ public class MessageService {
 
         if (validMessageOptional.isEmpty()) {
             LOGGER.error("No message found with ID: {}. Message update failed - MessageService.updateMessage(Integer messageId, String updatedMessageText) method.", messageId);
-            throw new BadRequestException("Message with ID " + messageId + " not found. Message update failed.");
+            throw new BadRequestException("Message with ID " + messageId + " not found. Message update failed."); 
+             
         }
         Message validMessage = validMessageOptional.get();
         validMessage.setMessageText(updatedMessageText);
         messageRepository.save(validMessage);
         LOGGER.info("Successfully updated message with ID: {} - MessageService.updateMessage(Integer messageId, String updatedMessageText) method.", messageId);
 
-        return 1;
+        return ROWS_AFFECTED;  
     }
 
     /**

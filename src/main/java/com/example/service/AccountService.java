@@ -29,8 +29,14 @@ import com.example.repository.AccountRepository;
 @Service
 public class AccountService {
 
+    /**
+     * Logger for this class.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
 
+    /**
+     * Repository for account data access.
+     */
     @Autowired
     private AccountRepository accountRepository;
 
@@ -328,7 +334,6 @@ public class AccountService {
      * @param accountId the ID of the account to delete
      * @return true if the account was successfully deleted, false if no account with the given ID exists
      */
-    @Transactional(isolation = Isolation.SERIALIZABLE, rollbackFor = Exception.class)
     public boolean deleteById(Integer accountId) {
         if (accountRepository.existsById(accountId)) {
             accountRepository.deleteById(accountId);

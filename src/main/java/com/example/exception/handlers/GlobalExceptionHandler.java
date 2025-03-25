@@ -337,8 +337,8 @@ public class GlobalExceptionHandler {
      * @return a ResponseEntity containing the API error details and the HTTP status code 403 (Forbidden).
      */
     @ExceptionHandler(PermissionDeniedDataAccessException.class)
-    public ResponseEntity<ApiError> handlePermissionDeniedDataAccessException(PermissionDeniedDataAccessException ex) {
-        LOGGER.error("Permission denied data access exception: {}", ex.getMessage());
+    public ResponseEntity<ApiError> handlePermissionDeniedDataAccessException(PermissionDeniedDataAccessException exception) {
+        LOGGER.error("Permission denied data access exception: {}", exception.getMessage());
         ApiError apiError = new ApiError(HttpStatus.FORBIDDEN.value(), "Insufficient database permissions for this operation");
         return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
     }
@@ -346,12 +346,12 @@ public class GlobalExceptionHandler {
     /**
      * Handles any unexpected Exception.
      * 
-     * @param ex the unexpected exception.
+     * @param exception the unexpected exception.
      * @return a ResponseEntity containing the API error details and the HTTP status code 500 (Internal Server Error).
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleGenericException(Exception ex) {
-        LOGGER.error("Unexpected error occurred: {}", ex.getMessage(), ex);
+    public ResponseEntity<ApiError> handleGenericException(Exception exception) {
+        LOGGER.error("Unexpected error occurred: {}", exception.getMessage(), exception);
         ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(), 
                 "An unexpected error occurred. Please try again later.");
         return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
